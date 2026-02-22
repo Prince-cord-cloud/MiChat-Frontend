@@ -1,4 +1,9 @@
-const API_BASE = 'http://localhost:3000/api';
+// Determine backend base URL based on frontend environment
+const BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+  ? 'http://localhost:3000'
+  : 'https://michat-backend-0i2m.onrender.com';
+
+const API_BASE = BASE_URL + '/api';
 
 async function apiCall(endpoint, method = 'GET', body = null, token = null) {
     const headers = { 'Content-Type': 'application/json' };

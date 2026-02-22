@@ -5,6 +5,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
+    // Determine backend base URL based on frontend environment
+    const BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+        ? 'http://localhost:3000'
+        : 'https://michat-backend-0i2m.onrender.com';
+
     // DOM elements
     const backBtn = document.getElementById('back-btn');
     const editBtn = document.getElementById('edit-btn');
@@ -43,7 +48,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         phoneDisplay.textContent = currentUser.phone || 'Unknown';
         emailDisplay.textContent = currentUser.email || 'Unknown';
         if (currentUser.profilePic && currentUser.profilePic !== 'default-avatar.png') {
-            avatarImg.src = `http://localhost:3000${currentUser.profilePic}`;
+            avatarImg.src = BASE_URL + currentUser.profilePic;
         } else {
             avatarImg.src = 'assets/default-avatar.png';
         }
@@ -94,14 +99,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         const formData = new FormData();
         formData.append('profilePic', file);
         try {
-            const res = await fetch('http://localhost:3000/api/users/profile-pic', {
+            const res = await fetch(`${BASE_URL}/api/users/profile-pic`, {
                 method: 'POST',
                 headers: { 'Authorization': `Bearer ${token}` },
                 body: formData
             });
             const data = await res.json();
             if (res.ok) {
-                avatarImg.src = `http://localhost:3000${data.profilePic}`;
+                avatarImg.src = BASE_URL + data.profilePic;
                 currentUser.profilePic = data.profilePic;
             } else {
                 throw new Error(data.message || 'Upload failed');

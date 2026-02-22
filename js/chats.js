@@ -5,6 +5,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
+    // Determine backend base URL based on frontend environment
+    const BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+        ? 'http://localhost:3000'
+        : 'https://michat-backend-0i2m.onrender.com';
+
+    const WS_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+        ? 'ws://localhost:3000'
+        : 'wss://michat-backend-0i2m.onrender.com';
+
     // DOM elements
     const chatListEl = document.getElementById('chat-list');
     const messagesContainer = document.getElementById('messages-container');
@@ -61,7 +70,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const contactInfoName = document.getElementById('contact-info-name');
     const contactInfoPhone = document.getElementById('contact-info-phone');
     const contactInfoAbout = document.getElementById('contact-info-about');
-    // NEW: email display and buttons
     const contactInfoEmail = document.getElementById('contact-info-email');
     const contactInfoDeleteChat = document.getElementById('contact-info-delete-chat');
     const contactInfoClose = document.getElementById('contact-info-close');
@@ -112,10 +120,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         profileView.classList.add('hidden');
         chatsNav.classList.add('active');
         profileNav.classList.remove('active');
-        // Clear search when switching back to chat list (optional)
         searchTerm = '';
         if (searchInput) searchInput.value = '';
-        renderChatList(); // re-render full list
+        renderChatList();
     }
 
     function showProfile() {
@@ -123,7 +130,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         profileView.classList.remove('hidden');
         profileNav.classList.add('active');
         chatsNav.classList.remove('active');
-        loadProfileData(); // refresh profile data when shown
+        loadProfileData();
     }
 
     if (chatsNav) chatsNav.addEventListener('click', showChatList);
@@ -146,7 +153,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         profilePhoneDisplay.textContent = currentUser.phone || 'Unknown';
         profileEmailDisplay.textContent = currentUser.email || 'Unknown';
         if (currentUser.profilePic && currentUser.profilePic !== 'default-avatar.png') {
-            profileAvatar.src = `http://localhost:3000${currentUser.profilePic}`;
+            profileAvatar.src = BASE_URL + currentUser.profilePic;
         } else {
             profileAvatar.src = 'assets/default-avatar.png';
         }
@@ -175,7 +182,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 currentUser.name = newName;
                 currentUser.about = newAbout;
                 renderProfile();
-                // Exit edit mode
                 profileNameDisplay.classList.remove('hidden');
                 profileAboutDisplay.classList.remove('hidden');
                 profileNameInput.classList.add('hidden');
@@ -203,14 +209,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             const formData = new FormData();
             formData.append('profilePic', file);
             try {
-                const res = await fetch('http://localhost:3000/api/users/profile-pic', {
+                const res = await fetch(`${BASE_URL}/api/users/profile-pic`, {
                     method: 'POST',
                     headers: { 'Authorization': `Bearer ${token}` },
                     body: formData
                 });
                 const data = await res.json();
                 if (res.ok) {
-                    profileAvatar.src = `http://localhost:3000${data.profilePic}`;
+                    profileAvatar.src = BASE_URL + data.profilePic;
                     currentUser.profilePic = data.profilePic;
                 } else {
                     throw new Error(data.message || 'Upload failed');
@@ -246,7 +252,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     function renderChatList() {
         if (!chatListEl) return;
 
-        // Filter conversations by name (case‑insensitive)
         let filtered = conversations;
         if (searchTerm) {
             filtered = conversations.filter(conv => 
@@ -274,7 +279,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         `).join('');
 
         document.querySelectorAll('.chat-item').forEach(item => {
-            // Click to open conversation
             item.addEventListener('click', () => {
                 const convId = item.dataset.convId;
                 openConversation(convId);
@@ -283,7 +287,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
             });
 
-            // Long-press detection for chat item
             let pressTimer;
             const startPress = (e) => {
                 e.preventDefault();
@@ -302,94 +305,86 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     if (contextViewProfile) {
-    contextViewProfile.addEventListener('click', async () => {
-        contextMenu.classList.add('hidden');
-        if (!selectedChatItem) return;
-        const convId = selectedChatItem.dataset.convId;
-        const conv = conversations.find(c => c.id === convId);
-        if (!conv) return;
+        contextViewProfile.addEventListener('click', async () => {
+            contextMenu.classList.add('hidden');
+            if (!selectedChatItem) return;
+            const convId = selectedChatItem.dataset.convId;
+            const conv = conversations.find(c => c.id === convId);
+            if (!conv) return;
 
-        // Log the full conversation for debugging
-        console.log('Conversation object:', JSON.stringify(conv, null, 2));
+            console.log('Conversation object:', JSON.stringify(conv, null, 2));
 
-        const currentUserId = localStorage.getItem('userId');
-        let targetUserId = null;
+            const currentUserId = localStorage.getItem('userId');
+            let targetUserId = null;
 
-        // Try multiple ways to get the other user's ID
-        if (conv.participants && Array.isArray(conv.participants)) {
-            // participants array of objects with _id
-            const other = conv.participants.find(p => {
-                const pid = p._id ? p._id.toString() : p.toString();
-                return pid !== currentUserId;
-            });
-            targetUserId = other ? (other._id ? other._id.toString() : other.toString()) : null;
-        } else if (conv.participantIds && Array.isArray(conv.participantIds)) {
-            // plain array of participant IDs
-            const other = conv.participantIds.find(id => id.toString() !== currentUserId);
-            targetUserId = other ? other.toString() : null;
-        } else if (conv.userId) {
-            // direct field for the other user's ID (common pattern)
-            targetUserId = conv.userId.toString();
-        } else if (conv.otherUserId) {
-            targetUserId = conv.otherUserId.toString();
-        } else if (conv.participantId) {
-            targetUserId = conv.participantId.toString();
-        }
+            if (conv.participants && Array.isArray(conv.participants)) {
+                const other = conv.participants.find(p => {
+                    const pid = p._id ? p._id.toString() : p.toString();
+                    return pid !== currentUserId;
+                });
+                targetUserId = other ? (other._id ? other._id.toString() : other.toString()) : null;
+            } else if (conv.participantIds && Array.isArray(conv.participantIds)) {
+                const other = conv.participantIds.find(id => id.toString() !== currentUserId);
+                targetUserId = other ? other.toString() : null;
+            } else if (conv.userId) {
+                targetUserId = conv.userId.toString();
+            } else if (conv.otherUserId) {
+                targetUserId = conv.otherUserId.toString();
+            } else if (conv.participantId) {
+                targetUserId = conv.participantId.toString();
+            }
 
-        // If still not found, try to extract from the conversation's own id? No, that's conversation ID.
-        if (!targetUserId) {
-            console.error('Could not identify contact. Conversation:', conv);
-            alert('Could not identify contact. See console for details.');
-            return;
-        }
+            if (!targetUserId) {
+                console.error('Could not identify contact. Conversation:', conv);
+                alert('Could not identify contact. See console for details.');
+                return;
+            }
 
-        try {
-            const data = await apiCall(`/users/${targetUserId}`, 'GET', null, token);
-            const user = data.user;
-            contactInfoAvatar.src = user.profilePic && user.profilePic !== 'default-avatar.png'
-                ? `http://localhost:3000${user.profilePic}`
-                : 'assets/default-avatar.png';
-            contactInfoName.textContent = user.name || 'Unknown';
-            contactInfoPhone.textContent = user.phone;
-            contactInfoAbout.textContent = user.about || 'Hey there! I\'m using MiChat';
-            contactInfoEmail.textContent = user.email ? `Email: ${user.email}` : 'Email not provided';
+            try {
+                const data = await apiCall(`/users/${targetUserId}`, 'GET', null, token);
+                const user = data.user;
+                contactInfoAvatar.src = user.profilePic && user.profilePic !== 'default-avatar.png'
+                    ? BASE_URL + user.profilePic
+                    : 'assets/default-avatar.png';
+                contactInfoName.textContent = user.name || 'Unknown';
+                contactInfoPhone.textContent = user.phone;
+                contactInfoAbout.textContent = user.about || 'Hey there! I\'m using MiChat';
+                contactInfoEmail.textContent = user.email ? `Email: ${user.email}` : 'Email not provided';
 
-            // Handle delete button
-            if (contactInfoDeleteChat) {
-                const newDeleteBtn = contactInfoDeleteChat.cloneNode(true);
-                contactInfoDeleteChat.parentNode.replaceChild(newDeleteBtn, contactInfoDeleteChat);
-                const freshDeleteBtn = document.getElementById('contact-info-delete-chat');
-                freshDeleteBtn.addEventListener('click', () => {
-                    contactInfoModal.classList.add('hidden');
-                    if (selectedChatItem) {
-                        const convId = selectedChatItem.dataset.convId;
-                        if (confirm('Are you sure you want to delete this chat?')) {
-                            conversations = conversations.filter(c => c.id !== convId);
-                            renderChatList();
-                            if (currentConversationId === convId) {
-                                currentConversationId = null;
-                                chatNameEl.textContent = 'Select a chat';
-                                chatAvatar.src = 'assets/default-avatar.png';
-                                messagesContainer.innerHTML = '';
+                if (contactInfoDeleteChat) {
+                    const newDeleteBtn = contactInfoDeleteChat.cloneNode(true);
+                    contactInfoDeleteChat.parentNode.replaceChild(newDeleteBtn, contactInfoDeleteChat);
+                    const freshDeleteBtn = document.getElementById('contact-info-delete-chat');
+                    freshDeleteBtn.addEventListener('click', () => {
+                        contactInfoModal.classList.add('hidden');
+                        if (selectedChatItem) {
+                            const convId = selectedChatItem.dataset.convId;
+                            if (confirm('Are you sure you want to delete this chat?')) {
+                                conversations = conversations.filter(c => c.id !== convId);
+                                renderChatList();
+                                if (currentConversationId === convId) {
+                                    currentConversationId = null;
+                                    chatNameEl.textContent = 'Select a chat';
+                                    chatAvatar.src = 'assets/default-avatar.png';
+                                    messagesContainer.innerHTML = '';
+                                }
                             }
                         }
-                    }
-                });
-            }
+                    });
+                }
 
-            // Close button
-            if (contactInfoClose) {
-                contactInfoClose.addEventListener('click', () => {
-                    contactInfoModal.classList.add('hidden');
-                });
-            }
+                if (contactInfoClose) {
+                    contactInfoClose.addEventListener('click', () => {
+                        contactInfoModal.classList.add('hidden');
+                    });
+                }
 
-            contactInfoModal.classList.remove('hidden');
-        } catch (err) {
-            alert('Failed to load contact info: ' + err.message);
-        }
-    });
-}
+                contactInfoModal.classList.remove('hidden');
+            } catch (err) {
+                alert('Failed to load contact info: ' + err.message);
+            }
+        });
+    }
 
     if (contextDeleteChat) {
         contextDeleteChat.addEventListener('click', () => {
@@ -397,7 +392,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (!selectedChatItem) return;
             const convId = selectedChatItem.dataset.convId;
             if (confirm('Are you sure you want to delete this chat?')) {
-                // TODO: call backend endpoint to delete conversation
                 conversations = conversations.filter(c => c.id !== convId);
                 renderChatList();
                 if (currentConversationId === convId) {
@@ -447,10 +441,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         actionDelete.addEventListener('click', async () => {
             if (!selectedMessageData) return;
             if (confirm('Delete this message for you?')) {
-                // Remove from UI
                 if (selectedMessageElement) selectedMessageElement.remove();
-                // Optionally call backend endpoint
-                // await apiCall(`/messages/${selectedMessageData._id}`, 'DELETE', null, token);
                 console.log('Message deleted (UI only)');
             }
             messageActionsModal.classList.add('hidden');
@@ -463,7 +454,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (!selectedMessageData) return;
             const newText = prompt('Edit message:', selectedMessageData.content?.text);
             if (newText && newText !== selectedMessageData.content?.text) {
-                // TODO: call backend update endpoint
                 alert('Edit feature – backend needed');
             }
             messageActionsModal.classList.add('hidden');
@@ -491,7 +481,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     function renderMessages(messages) {
-        window.lastMessages = messages; // store for later use
+        window.lastMessages = messages;
         const currentUserId = localStorage.getItem('userId');
         messagesContainer.innerHTML = messages.map(msg => {
             const senderId = typeof msg.senderId === 'object' ? msg.senderId._id : msg.senderId;
@@ -603,7 +593,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const user = data.user;
                 searchResult.innerHTML = `
                     <div class="contact-result-item" data-user-id="${user._id}">
-                        <img src="${user.profilePic && user.profilePic !== 'default-avatar.png' ? 'http://localhost:3000' + user.profilePic : 'assets/default-avatar.png'}" alt="avatar">
+                        <img src="${user.profilePic && user.profilePic !== 'default-avatar.png' ? BASE_URL + user.profilePic : 'assets/default-avatar.png'}" alt="avatar">
                         <div class="info">
                             <div class="name">${user.name || 'Unknown'}</div>
                             <div class="phone">${user.phone}</div>
@@ -653,7 +643,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // ==================== WEBSOCKET ====================
     if (typeof io !== 'undefined') {
-        socket = io('ws://localhost:3000', { auth: { token } });
+        socket = io(WS_URL, { auth: { token } });
         socket.on('connect', () => console.log('✅ WebSocket connected'));
 
         socket.on('message:receive', (data) => {
@@ -664,7 +654,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             } else {
                 loadConversations();
             }
-            // Emit delivered receipt (if we are not the sender)
             const senderId = typeof msg.senderId === 'object' ? msg.senderId._id : msg.senderId;
             if (senderId !== localStorage.getItem('userId')) {
                 socket.emit('receipt:delivered', {

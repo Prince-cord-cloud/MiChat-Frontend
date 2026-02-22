@@ -5,6 +5,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
+    // Determine backend base URL based on frontend environment
+    const BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+        ? 'http://localhost:3000'
+        : 'https://michat-backend-0i2m.onrender.com';
+
     // Get user ID from URL (e.g., ?userId=xxx)
     const urlParams = new URLSearchParams(window.location.search);
     const userId = urlParams.get('userId');
@@ -26,7 +31,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const data = await apiCall(`/users/${userId}`, 'GET', null, token);
         const user = data.user;
         avatar.src = user.profilePic && user.profilePic !== 'default-avatar.png'
-            ? `http://localhost:3000${user.profilePic}`
+            ? BASE_URL + user.profilePic
             : 'assets/default-avatar.png';
         nameEl.textContent = user.name || 'Unknown';
         aboutEl.textContent = user.about || 'Hey there! I\'m using MiChat';
