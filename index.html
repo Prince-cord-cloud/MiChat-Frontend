@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MiChat – Chats</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/profile.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Left panel -->
+        <div class="chat-list-panel" id="left-panel">
+            <!-- Theme toggle inside left panel -->
+            <div class="panel-header">
+                <button id="theme-toggle-btn" aria-label="Toggle dark/light mode">
+                    <i class="fas fa-sun"></i>
+                </button>
+            </div>
+
+            <!-- Chat list view (default) -->
+            <div id="chat-list-view">
+                <div class="chat-list-header">
+                    <h2>Chats</h2>
+                    <button id="new-chat-btn" class="btn-icon"><i class="fas fa-plus"></i></button>
+                </div>
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search conversations">
+                </div>
+                <div class="chat-list" id="chat-list">
+                    <!-- Chat items injected here -->
+                </div>
+            </div>
+
+            <!-- Profile view (initially hidden) -->
+            <div id="profile-view" class="hidden">
+                <div class="profile-header" style="background: var(--pink); color: white;">
+                    <h2>My Profile</h2>
+                    <button id="profile-edit-btn" class="edit-btn"><i class="fas fa-pen"></i></button>
+                </div>
+                <div class="profile-content" style="padding: 20px;">
+                    <div class="avatar-section">
+                        <img id="profile-avatar" src="assets/default-avatar.png" alt="avatar">
+                        <input type="file" id="avatar-upload" accept="image/*" style="display: none;">
+                        <button id="change-avatar-btn" class="change-avatar"><i class="fas fa-camera"></i></button>
+                    </div>
+                    <div class="info-section">
+                        <div class="info-item">
+                            <label>Name</label>
+                            <div class="info-value" id="profile-name-display">Loading...</div>
+                            <input type="text" id="profile-name-input" class="edit-input hidden" placeholder="Your name">
+                        </div>
+                        <div class="info-item">
+                            <label>About</label>
+                            <div class="info-value" id="profile-about-display">Hey there! I'm using MiChat</div>
+                            <input type="text" id="profile-about-input" class="edit-input hidden" placeholder="Status message">
+                        </div>
+                        <div class="info-item">
+                            <label>Phone</label>
+                            <div class="info-value" id="profile-phone-display">Loading...</div>
+                        </div>
+                        <div class="info-item">
+                            <label>Email</label>
+                            <div class="info-value" id="profile-email-display">Loading...</div>
+                        </div>
+                    </div>
+                    <div class="profile-sections">
+                        <div class="section-item" onclick="alert('Media coming soon')">
+                            <i class="fas fa-image"></i>
+                            <span>Media, Links and Docs</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                        <div class="section-item" onclick="alert('Groups coming soon')">
+                            <i class="fas fa-users"></i>
+                            <span>Groups in common</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                        <div class="section-item" onclick="alert('Privacy settings')">
+                            <i class="fas fa-lock"></i>
+                            <span>Privacy</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </div>
+                    <div class="action-buttons">
+                        <button id="profile-save-btn" class="save-btn hidden">Save Changes</button>
+                        <button id="profile-logout-btn" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom navigation (mobile only) -->
+            <div class="bottom-nav">
+                <button class="nav-btn" id="chats-nav"><i class="fas fa-message"></i></button>
+                <button class="nav-btn center" id="new-chat-nav"><i class="fas fa-plus-circle"></i></button>
+                <button class="nav-btn" id="profile-nav"><i class="fas fa-user"></i></button>
+            </div>
+        </div>
+
+        <!-- Right panel: Chat history -->
+        <div class="chat-history-panel" id="chat-history-panel">
+            <div class="chat-header">
+                <button id="back-to-list" class="mobile-only"><i class="fas fa-arrow-left"></i></button>
+                <img src="assets/default-avatar.png" alt="" class="chat-avatar" id="chat-avatar">
+                <div class="chat-info">
+                    <h3 id="chat-name">Select a chat</h3>
+                    <span id="chat-status"></span>
+                </div>
+                <button class="header-btn"><i class="fas fa-phone"></i></button>
+                <button class="header-btn"><i class="fas fa-video"></i></button>
+                <button class="header-btn"><i class="fas fa-ellipsis-vertical"></i></button>
+            </div>
+            <div class="messages-container" id="messages-container">
+                <!-- Messages appear here -->
+            </div>
+            <div class="message-input">
+                <button class="attach-btn"><i class="fas fa-paperclip"></i></button>
+                <input type="text" placeholder="Type a message" id="message-text">
+                <button class="send-btn" id="send-message-btn"><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- New chat modal -->
+    <div id="contacts-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>New Chat</h3>
+                <button class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="search-contact">
+                    <input type="tel" id="search-phone" placeholder="Enter phone number (e.g., 09075634424)">
+                    <button id="search-contact-btn" class="btn-primary">Search</button>
+                </div>
+                <div id="search-result" class="search-result"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Context menu (long‑press on chat item) -->
+    <div id="context-menu" class="modal hidden">
+        <div class="modal-content" style="width: 250px;">
+            <div class="modal-body" style="padding: 10px;">
+                <button id="context-view-profile" class="context-menu-item"><i class="fas fa-user"></i> View Profile</button>
+                <button id="context-delete-chat" class="context-menu-item"><i class="fas fa-trash"></i> Delete Chat</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact info modal -->
+    <div id="contact-info-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Contact Info</h3>
+                <button class="close-btn" id="close-contact-info">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="profile-info">
+                    <img id="contact-info-avatar" src="assets/default-avatar.png" alt="avatar" class="profile-avatar">
+                    <h3 id="contact-info-name">Loading...</h3>
+                    <p id="contact-info-phone"></p>
+                    <p id="contact-info-about"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Message actions modal (long‑press on message) -->
+    <div id="message-actions-modal" class="modal hidden">
+        <div class="modal-content" style="width: 250px;">
+            <div class="modal-body" style="padding: 10px;">
+                <button id="action-copy" class="context-menu-item"><i class="fas fa-copy"></i> Copy</button>
+                <button id="action-delete" class="context-menu-item"><i class="fas fa-trash"></i> Delete</button>
+                <button id="action-edit" class="context-menu-item hidden"><i class="fas fa-edit"></i> Edit</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/chats.js"></script>
+</body>
+</html>

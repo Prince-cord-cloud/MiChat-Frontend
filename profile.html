@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MiChat – My Profile</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/profile.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+<body>
+    <div class="profile-container">
+        <!-- Header -->
+        <div class="profile-header">
+            <button id="back-btn"><i class="fas fa-arrow-left"></i></button>
+            <h2>My Profile</h2>
+            <button id="edit-btn" class="edit-btn"><i class="fas fa-pen"></i></button>
+        </div>
+
+        <!-- Profile Content -->
+        <div class="profile-content">
+            <!-- Avatar -->
+            <div class="avatar-section">
+                <img id="profile-avatar" src="assets/default-avatar.png" alt="avatar">
+                <input type="file" id="avatar-upload" accept="image/*" style="display: none;">
+                <button id="change-avatar-btn" class="change-avatar"><i class="fas fa-camera"></i></button>
+            </div>
+
+            <!-- Info Fields -->
+            <div class="info-section">
+                <div class="info-item">
+                    <label>Name</label>
+                    <div class="info-value" id="name-display">Loading...</div>
+                    <input type="text" id="name-input" class="edit-input hidden" placeholder="Your name">
+                </div>
+                <div class="info-item">
+                    <label>About</label>
+                    <div class="info-value" id="about-display">Hey there! I'm using MiChat</div>
+                    <input type="text" id="about-input" class="edit-input hidden" placeholder="Status message">
+                </div>
+                <div class="info-item">
+                    <label>Phone</label>
+                    <div class="info-value" id="phone-display">Loading...</div>
+                </div>
+                <div class="info-item">
+                    <label>Email</label>
+                    <div class="info-value" id="email-display">Loading...</div>
+                </div>
+            </div>
+
+            <!-- Additional Sections (enhanced) -->
+            <div class="profile-sections">
+                <div class="section-item" onclick="alert('Media coming soon')">
+                    <i class="fas fa-image"></i>
+                    <span>Media, Links and Docs</span>
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+                <div class="section-item" onclick="alert('Groups coming soon')">
+                    <i class="fas fa-users"></i>
+                    <span>Groups in common</span>
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+                <div class="section-item" onclick="alert('Privacy settings')">
+                    <i class="fas fa-lock"></i>
+                    <span>Privacy</span>
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <button id="save-btn" class="save-btn hidden">Save Changes</button>
+                <button id="logout-btn" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation (same as chats page) -->
+        <div class="bottom-nav">
+            <button class="nav-btn" id="chats-nav"><i class="fas fa-message"></i></button>
+            <button class="nav-btn active" id="profile-nav"><i class="fas fa-user"></i></button>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/profile.js"></script>
+</body>
+</html>
