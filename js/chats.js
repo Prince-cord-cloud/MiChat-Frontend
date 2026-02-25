@@ -86,7 +86,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Message actions modal
     const messageActionsModal = document.getElementById('message-actions-modal');
     const actionCopy = document.getElementById('action-copy');
-    const actionDelete = document.getElementById('action-delete');
+    const actionDeleteMe = document.getElementById('action-delete-me');
+    const actionDeleteEveryone = document.getElementById('action-delete-everyone');
     const actionEdit = document.getElementById('action-edit');
     let selectedMessageElement = null;
     let selectedMessageData = null;
@@ -157,6 +158,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     /// ==================== LOADER FUNCTIONS ====================
     function showLoader(element) {
         element.innerHTML = '<div class="loader-container"><div class="loader"></div></div>';
+    }
+
+    // Small loader shown when an incoming message is being fetched/rendered
+    function showIncomingLoader() {
+        if (!messagesContainer) return;
+        if (messagesContainer.querySelector('.incoming-loader')) return;
+        const d = document.createElement('div');
+        d.className = 'incoming-loader';
+        d.innerHTML = '<span></span><span></span><span></span>';
+        messagesContainer.appendChild(d);
+    }
+
+    function hideIncomingLoader() {
+        if (!messagesContainer) return;
+        const el = messagesContainer.querySelector('.incoming-loader');
+        if (el) el.remove();
     }
 
     // ==================== LOAD CONVERSATIONS ====================
@@ -532,11 +549,19 @@ document.addEventListener('DOMContentLoaded', async () => {
                 if (selectedMessageElement) selectedMessageElement.classList.remove('selected');
             }
         });
-        // Close when clicking outside the modal
+        const messageActionsCloseBtn = document.getElementById('message-actions-close');
+        if (messageActionsCloseBtn) {
+            messageActionsCloseBtn.addEventListener('click', () => {
+                messageActionsModal.classList.add('hidden');
+                if (selectedMessageElement) selectedMessageElement.classList.remove('selected');
+            });
+        }
+        // Close when clicking outside the modal or the selected message
         document.addEventListener('click', (e) => {
-            if (messageActionsModal && !messageActionsModal.classList.contains('hidden') 
-                && !messageActionsModal.contains(e.target) 
-                && e.target !== selectedMessageElement) {
+            if (!messageActionsModal || messageActionsModal.classList.contains('hidden')) return;
+            const clickedInsideModal = messageActionsModal.contains(e.target);
+            const clickedInsideMessage = selectedMessageElement && selectedMessageElement.contains(e.target);
+            if (!clickedInsideModal && !clickedInsideMessage) {
                 messageActionsModal.classList.add('hidden');
                 if (selectedMessageElement) selectedMessageElement.classList.remove('selected');
             }
@@ -562,30 +587,38 @@ document.addEventListener('DOMContentLoaded', async () => {
         };
     }
 
-    // Delete message - SINGLE listener with backend call
-    if (actionDelete) {
-        actionDelete.onclick = async () => {
+    // Delete message handlers
+    if (actionDeleteMe) {
+        actionDeleteMe.onclick = async () => {
             if (!selectedMessageData) return;
-            if (confirm('Delete this message?')) {
-                try {
-                    // Call backend to delete message
-                    await apiCall(`/messages/${selectedMessageData._id}`, 'DELETE', null, token);
-                    
-                    // Remove from UI
-                    if (selectedMessageElement) {
-                        selectedMessageElement.remove();
-                    }
-                    
-                    // Reload messages to sync
-                    if (currentConversationId) {
-                        const data = await getMessages(token, currentConversationId);
-                        renderMessages(data.messages);
-                    }
-                    
-                    alert('Message deleted');
-                } catch (err) {
-                    alert('Failed to delete: ' + err.message);
+            if (!confirm('Delete this message for you?')) return;
+            try {
+                await apiCall(`/messages/${selectedMessageData._id}?scope=me`, 'DELETE', null, token);
+                if (selectedMessageElement) selectedMessageElement.remove();
+                if (currentConversationId) {
+                    const data = await getMessages(token, currentConversationId);
+                    renderMessages(data.messages);
                 }
+            } catch (err) {
+                alert('Failed to delete: ' + err.message);
+            }
+            messageActionsModal.classList.add('hidden');
+            if (selectedMessageElement) selectedMessageElement.classList.remove('selected');
+        };
+    }
+
+    if (actionDeleteEveryone) {
+        actionDeleteEveryone.onclick = async () => {
+            if (!selectedMessageData) return;
+            if (!confirm('Delete this message for everyone? This cannot be undone.')) return;
+            try {
+                await apiCall(`/messages/${selectedMessageData._id}?scope=all`, 'DELETE', null, token);
+                if (currentConversationId) {
+                    const data = await getMessages(token, currentConversationId);
+                    renderMessages(data.messages);
+                }
+            } catch (err) {
+                alert('Failed to delete for everyone: ' + err.message);
             }
             messageActionsModal.classList.add('hidden');
             if (selectedMessageElement) selectedMessageElement.classList.remove('selected');
@@ -599,6 +632,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (conv) {
             chatNameEl.textContent = conv.name || 'Chat';
             chatAvatar.src = conv.avatar ? BASE_URL + conv.avatar : 'assets/default-avatar.jpg';
+            // Show presence/status under the chat name
+            // Always show only 'online' or 'offline'
+            chatStatusEl.textContent = conv.status === 'online' ? 'online' : 'offline';
             
             // Clear unread count locally and update chat list UI
             conv.unreadCount = 0;
@@ -632,15 +668,18 @@ document.addEventListener('DOMContentLoaded', async () => {
                     renderChatList();
                 }
             } catch (err) {
-                messagesContainer.innerHTML = '<div class="empty-state">Failed to load messages</div>';
+                const msg = err && err.message ? err.message : 'Unknown error';
+                messagesContainer.innerHTML = `<div class="empty-state">Failed to load messages: ${msg}</div>`;
                 console.error('Failed to load messages', err);
             }
         }
     }
 
     function renderMessages(messages) {
-        window.lastMessages = messages;
+        const prevMessages = window.lastMessages || [];
+        const prevIds = new Set(prevMessages.map(m => m._id));
         const currentUserId = localStorage.getItem('userId');
+
         messagesContainer.innerHTML = messages.map(msg => {
             const senderId = typeof msg.senderId === 'object' ? msg.senderId._id : msg.senderId;
             const isOutgoing = senderId === currentUserId;
@@ -655,8 +694,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                     statusHtml = `<i class="fas fa-check" style="color: #8e8e93; font-size: 12px; margin-left: 5px;" title="Sent"></i>`;
                 }
             }
+
+            const isNewIncoming = !isOutgoing && !prevIds.has(msg._id);
             return `
-                <div class="message ${isOutgoing ? 'outgoing' : 'incoming'}" data-message-id="${msg._id}">
+                <div class="message ${isOutgoing ? 'outgoing' : (isNewIncoming ? 'incoming incoming-new' : 'incoming')}" data-message-id="${msg._id}">
+                    <button class="message-options-btn" aria-label="Message options"><i class="fas fa-ellipsis-h"></i></button>
                     <div class="text">${msg.content?.text || ''}</div>
                     <div class="timestamp">
                         ${new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -665,53 +707,82 @@ document.addEventListener('DOMContentLoaded', async () => {
                 </div>
             `;
         }).join('');
+
+        // scroll and attach listeners
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
         attachMessageListeners();
+
+        // cleanup incoming-new after animation
+        requestAnimationFrame(() => {
+            const els = messagesContainer.querySelectorAll('.message.incoming-new');
+            els.forEach(el => setTimeout(() => el.classList.remove('incoming-new'), 400));
+        });
+
+        window.lastMessages = messages;
     }
 
     function attachMessageListeners() {
         document.querySelectorAll('.message').forEach(msgEl => {
             let pressTimer;
+
+            const openActions = () => {
+                const msgId = msgEl.dataset.messageId;
+                const msg = window.lastMessages?.find(m => m._id === msgId);
+                if (!msg) return;
+
+                selectedMessageElement = msgEl;
+                selectedMessageData = msg;
+
+                // Highlight
+                document.querySelectorAll('.message').forEach(m => m.classList.remove('selected'));
+                msgEl.classList.add('selected');
+
+                const currentUserId = localStorage.getItem('userId');
+                const senderId = typeof msg.senderId === 'object' ? msg.senderId._id : msg.senderId;
+                if (senderId === currentUserId) {
+                    if (actionDeleteMe) actionDeleteMe.classList.remove('hidden');
+                    if (actionDeleteEveryone) actionDeleteEveryone.classList.remove('hidden');
+                } else {
+                    if (actionDeleteMe) actionDeleteMe.classList.add('hidden');
+                    if (actionDeleteEveryone) actionDeleteEveryone.classList.add('hidden');
+                }
+
+                // show centered modal
+                messageActionsModal.style.left = '';
+                messageActionsModal.style.top = '';
+                messageActionsModal.classList.remove('hidden');
+            };
+
             const startPress = (e) => {
+                if (e instanceof PointerEvent && e.button !== 0) return;
                 e.preventDefault();
-                pressTimer = setTimeout(() => {
-                    const msgId = msgEl.dataset.messageId;
-                    const msg = window.lastMessages?.find(m => m._id === msgId);
-                    if (!msg) return;
-
-                    selectedMessageElement = msgEl;
-                    selectedMessageData = msg;
-
-                    // Highlight the message
-                    document.querySelectorAll('.message').forEach(m => m.classList.remove('selected'));
-                    msgEl.classList.add('selected');
-
-                    const currentUserId = localStorage.getItem('userId');
-                    const senderId = typeof msg.senderId === 'object' ? msg.senderId._id : msg.senderId;
-                    
-                    // Show delete button only if user is the sender
-                    if (senderId === currentUserId) {
-                        actionDelete.classList.remove('hidden');
-                    } else {
-                        actionDelete.classList.add('hidden');
-                    }
-
-                    // Position modal relative to message
-                    const rect = msgEl.getBoundingClientRect();
-                    const scrollX = window.scrollX || window.pageXOffset;
-                    const scrollY = window.scrollY || window.pageYOffset;
-                    messageActionsModal.style.left = (rect.left + scrollX + rect.width / 2 - 70) + 'px';
-                    messageActionsModal.style.top = (rect.top + scrollY - 60) + 'px';
-                    
-                    messageActionsModal.classList.remove('hidden');
-                }, 500);
+                clearTimeout(pressTimer);
+                pressTimer = setTimeout(openActions, 500);
             };
             const cancelPress = () => clearTimeout(pressTimer);
-            msgEl.addEventListener('mousedown', startPress);
+
+            msgEl.addEventListener('pointerdown', startPress);
+            msgEl.addEventListener('pointerup', cancelPress);
+            msgEl.addEventListener('pointerleave', cancelPress);
+            msgEl.addEventListener('pointercancel', cancelPress);
             msgEl.addEventListener('touchstart', startPress);
-            msgEl.addEventListener('mouseup', cancelPress);
             msgEl.addEventListener('touchend', cancelPress);
-            msgEl.addEventListener('mouseleave', cancelPress);
+
+            msgEl.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                clearTimeout(pressTimer);
+                openActions();
+            });
+
+            // Options button (desktop hover) — open actions when clicked
+            const optBtn = msgEl.querySelector('.message-options-btn');
+            if (optBtn) {
+                optBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    clearTimeout(pressTimer);
+                    openActions();
+                });
+            }
         });
     }
 
@@ -824,7 +895,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             const msg = data.message;
             // Use string comparison to avoid type mismatches
             if (msg.conversationId?.toString() === currentConversationId?.toString()) {
-                getMessages(token, currentConversationId).then(res => renderMessages(res.messages));
+                // Show small loader while fetching the new messages so the incoming message "drops" smoothly
+                try {
+                    showIncomingLoader();
+                } catch (e) {}
+                getMessages(token, currentConversationId)
+                    .then(res => renderMessages(res.messages))
+                    .finally(() => hideIncomingLoader());
             } else {
                 // Update local unread count so badge appears immediately
                 const convIdStr = msg.conversationId?.toString();
@@ -881,8 +958,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
         socket.on('presence:offline', (data) => {
             if (data.userId === currentOtherUserId) {
-                const lastSeen = data.lastSeen ? new Date(data.lastSeen).toLocaleString() : 'recently';
-                chatStatusEl.textContent = `last seen ${lastSeen}`;
+                chatStatusEl.textContent = 'offline';
             }
         });
     } else {

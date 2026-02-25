@@ -29,6 +29,8 @@
   --message-outgoing-bg: var(--pink);
   --message-outgoing-text: white;
   --chat-history-bg: #efeae2;
+  /* loader dot color for light theme */
+  --incoming-loader-dot: rgba(0, 0, 0, 0.18);
 }
 
 /* Dark theme variables */
@@ -54,6 +56,8 @@
   --message-outgoing-bg: var(--pink);
   --message-outgoing-text: white;
   --chat-history-bg: #2a2a3a;
+  /* loader dot color for dark theme */
+  --incoming-loader-dot: rgba(255, 255, 255, 0.12);
 }
 
 * {
@@ -459,6 +463,58 @@ body {
   flex-direction: column;
   background-image: url('data:image/svg+xml;utf8,<svg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="10" r="2" fill="%23e0e0e0" opacity="0.2"/><circle cx="30" cy="20" r="3" fill="%23e0e0e0" opacity="0.2"/><circle cx="50" cy="40" r="4" fill="%23e0e0e0" opacity="0.2"/></svg>');
   background-size: 60px 60px;
+  position: relative;
+}
+
+/* Incoming message loader (small, subtle) */
+.incoming-loader {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 12px;
+  display: flex;
+  gap: 6px;
+  z-index: 20;
+  pointer-events: none;
+}
+.incoming-loader span {
+  width: 8px;
+  height: 8px;
+  background: var(--incoming-loader-dot);
+  border-radius: 50%;
+  display: inline-block;
+  opacity: 0.95;
+  animation: incomingDot 1s infinite ease-in-out;
+}
+.incoming-loader span:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.incoming-loader span:nth-child(3) {
+  animation-delay: 0.3s;
+}
+@keyframes incomingDot {
+  0% {
+    transform: translateY(0);
+    opacity: 0.4;
+  }
+  50% {
+    transform: translateY(-6px);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 0.4;
+  }
+}
+
+/* Place theme toggle inside auth card when present */
+.auth-card {
+  position: relative;
+}
+.auth-card .theme-toggle {
+  position: absolute;
+  top: 12px;
+  right: 12px;
 }
 
 .message {
@@ -481,6 +537,25 @@ body {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* Drop-in animation for newly received messages */
+@keyframes dropIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-24px) scale(0.98);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(6px) scale(1.01);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+.message.incoming-new {
+  animation: dropIn 300ms cubic-bezier(0.22, 0.9, 0.35, 1) both;
 }
 
 .message.incoming {
@@ -510,6 +585,35 @@ body {
   align-items: center;
   justify-content: flex-end;
   gap: 4px;
+}
+
+/* Options button that appears on hover (desktop) */
+.message .message-options-btn {
+  position: absolute;
+  right: -6px;
+  top: 8px;
+  background: none;
+  border: none;
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 0.9rem;
+  padding: 6px;
+  border-radius: 6px;
+  opacity: 0;
+  transition:
+    opacity 0.15s,
+    background 0.15s,
+    color 0.15s;
+  cursor: pointer;
+}
+.message:hover .message-options-btn {
+  opacity: 1;
+}
+
+/* Hide options button on small screens (mobile) */
+@media (max-width: 768px) {
+  .message .message-options-btn {
+    display: none;
+  }
 }
 
 .message.outgoing .timestamp {
@@ -635,6 +739,21 @@ body {
   font-size: 1.2rem;
   font-weight: 600;
   color: var(--text-color);
+}
+
+/* Message actions modal: no dim backdrop, centered popup */
+#message-actions-modal.modal {
+  background: transparent; /* remove dark overlay */
+  backdrop-filter: none;
+}
+#message-actions-modal .modal-content {
+  width: 250px;
+  max-width: 90%;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+}
+#message-actions-modal .modal-body {
+  padding: 10px;
 }
 
 .modal-header-actions {

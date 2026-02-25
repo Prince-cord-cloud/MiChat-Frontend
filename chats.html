@@ -364,13 +364,21 @@
       </div>
     </div>
     <div id="message-actions-modal" class="modal hidden">
-      <div class="modal-content message-actions-popover">
-        <button id="action-copy" class="action-btn">
-          <i class="fas fa-copy"></i> Copy
-        </button>
-        <button id="action-delete" class="action-btn hidden">
-          <i class="fas fa-trash"></i> Delete
-        </button>
+      <div class="modal-content" style="width: 250px">
+        <div class="modal-header" style="display:flex; justify-content:flex-end; padding:6px 8px">
+          <button id="message-actions-close" class="close-btn" aria-label="Close">&times;</button>
+        </div>
+        <div class="modal-body" style="padding:10px">
+          <button id="action-copy" class="context-menu-item">
+            <i class="fas fa-copy"></i> Copy
+          </button>
+          <button id="action-delete-me" class="context-menu-item hidden">
+            <i class="fas fa-trash"></i> Delete for me
+          </button>
+          <button id="action-delete-everyone" class="context-menu-item hidden">
+            <i class="fas fa-user-slash"></i> Delete for everyone
+          </button>
+        </div>
       </div>
     </div>
 
