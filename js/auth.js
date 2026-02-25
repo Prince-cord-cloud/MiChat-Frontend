@@ -1,4 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // If already logged in, redirect to chats immediately
+    const token = localStorage.getItem('token');
+    if (token) {
+        window.location.replace('chats.html');
+        return;
+    }
+
     const step1 = document.getElementById('step-1');
     const step2 = document.getElementById('step-2');
     const step3 = document.getElementById('step-3');
@@ -57,7 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
             step2.classList.remove('hidden');
         } catch (err) {
             showError('phone-error', err.message);
-            throw err; // rethrow to ensure finally runs
+            throw err;
         }
     }));
 
@@ -98,7 +105,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 step3.classList.add('hidden');
                 step4.classList.remove('hidden');
             } else {
-                window.location.href = 'chats.html';
+                // Existing user: replace to prevent back navigation
+                window.location.replace('chats.html');
             }
         } catch (err) {
             showError('otp-error', err.message);
@@ -106,7 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }));
 
-    // Resend OTP (already disabled during countdown, but we add extra protection)
+    // Resend OTP
     const resendOtpBtn = document.getElementById('resend-otp-btn');
     resendOtpBtn.addEventListener('click', (e) => withButton(e.currentTarget, async () => {
         try {
@@ -118,7 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }));
 
-    // Back buttons (no async, no need to disable)
+    // Back buttons
     document.getElementById('back-to-phone').addEventListener('click', () => {
         step2.classList.add('hidden');
         step1.classList.remove('hidden');
@@ -141,7 +149,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 formData.append('profilePic', avatarUpload.files[0]);
                 await uploadProfilePic(token, formData);
             }
-            window.location.href = 'chats.html';
+            // After profile setup, replace to prevent back navigation
+            window.location.replace('chats.html');
         } catch (err) {
             showError('profile-error', err.message);
             throw err;

@@ -10,13 +10,23 @@ async function apiCall(endpoint, method = 'GET', body = null, token = null) {
     if (token) headers['Authorization'] = `Bearer ${token}`;
     const options = { method, headers };
     if (body) options.body = JSON.stringify(body);
-    const res = await fetch(`${API_BASE}${endpoint}`, options);
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.message || 'Something went wrong');
-    return data;
+
+    try {
+        const res = await fetch(`${API_BASE}${endpoint}`, options);
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || `Request failed with status ${res.status}`);
+        return data;
+    } catch (error) {
+        // Network error (e.g., server unreachable, CORS)
+        if (error.name === 'TypeError' && error.message === 'Failed to fetch') {
+            throw new Error('Unable to reach the server. Please check your internet connection or try again later.');
+        }
+        // Re-throw other errors (already formatted)
+        throw error;
+    }
 }
 
-// Auth endpoints
+// Auth endpoints (unchanged)
 async function checkPhone(phone, countryCode = '234') {
     return apiCall('/auth/check-phone', 'POST', { phone, countryCode });
 }
@@ -30,7 +40,7 @@ async function resendOtp(phone, email) {
     return apiCall('/auth/resend-otp', 'POST', { phone, email });
 }
 
-// User endpoints (authenticated)
+// User endpoints
 async function getMe(token) {
     return apiCall('/users/me', 'GET', null, token);
 }
@@ -43,10 +53,12 @@ async function uploadProfilePic(token, formData) {
         headers: { 'Authorization': `Bearer ${token}` },
         body: formData
     });
-    return res.json();
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || 'Upload failed');
+    return data;
 }
 
-// Chat endpoints
+// Chat endpoints (unchanged)
 async function getConversations(token) {
     return apiCall('/chats', 'GET', null, token);
 }
@@ -64,7 +76,6 @@ async function sendTextMessage(token, conversationId, text) {
 async function matchContacts(token, hashedNumbers) {
     return apiCall('/contacts/match', 'POST', { hashedNumbers }, token);
 }
-// Get user by phone
 async function getUserByPhone(token, phone) {
     return apiCall(`/users/phone/${encodeURIComponent(phone)}`, 'GET', null, token);
 }

@@ -1,76 +1,92 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>MiChat – Login</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/auth.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-</head>
-<body>
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/auth.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+    />
+  </head>
+  <body>
     <div class="theme-toggle">
-        <button id="theme-toggle-btn" aria-label="Toggle dark/light mode">
-            <i class="fas fa-sun"></i>
-        </button>
+      <button id="theme-toggle-btn" aria-label="Toggle dark/light mode">
+        <i class="fas fa-sun"></i>
+      </button>
     </div>
 
     <div class="auth-container">
-        <div class="auth-card">
-            <h1 class="logo">MiChat</h1>
-            <div id="step-1" class="auth-step">
-                <h2>Enter your phone number</h2>
-                <div class="input-group">
-                    <i class="fas fa-phone-alt"></i>
-                    <input type="tel" id="phone" placeholder="e.g., 09075634424">
-                </div>
-                <button id="check-phone-btn" class="btn-primary">Continue</button>
-                <p class="error" id="phone-error"></p>
-            </div>
-            <div id="step-2" class="auth-step hidden">
-                <h2>Enter your email</h2>
-                <div class="input-group">
-                    <i class="fas fa-envelope"></i>
-                    <input type="email" id="email" placeholder="your@email.com">
-                </div>
-                <button id="send-otp-btn" class="btn-primary">Send OTP</button>
-                <p class="error" id="email-error"></p>
-                <button class="btn-link" id="back-to-phone">← Back</button>
-            </div>
-            <div id="step-3" class="auth-step hidden">
-                <h2>Enter OTP</h2>
-                <p class="info">OTP sent to <span id="otp-email-display"></span></p>
-                <div class="input-group">
-                    <i class="fas fa-lock"></i>
-                    <input type="text" id="otp" placeholder="6-digit code" maxlength="6">
-                </div>
-                <button id="verify-otp-btn" class="btn-primary">Verify</button>
-                <p class="error" id="otp-error"></p>
-                <div class="resend-container">
-                    <p class="info">Resend OTP in <span id="countdown">300</span>s</p>
-                    <button id="resend-otp-btn" class="btn-link" disabled>Resend</button>
-                </div>
-                <button class="btn-link" id="back-to-email">← Back</button>
-            </div>
-            <div id="step-4" class="auth-step hidden">
-                <h2>Complete your profile</h2>
-                <div class="avatar-preview">
-                    <img id="avatar-img" src="assets/default-avatar.png" alt="avatar">
-                    <label for="avatar-upload" class="avatar-upload-label">
-                        <i class="fas fa-camera"></i>
-                    </label>
-                    <input type="file" id="avatar-upload" accept="image/*">
-                </div>
-                <div class="input-group">
-                    <i class="fas fa-user"></i>
-                    <input type="text" id="name" placeholder="Your name">
-                </div>
-                <button id="save-profile-btn" class="btn-primary">Start chatting</button>
-                <p class="error" id="profile-error"></p>
-            </div>
+      <div class="auth-card">
+        <h1 class="logo">MiChat</h1>
+        <div id="step-1" class="auth-step">
+          <h2>Enter your phone number</h2>
+          <div class="input-group">
+            <i class="fas fa-phone-alt"></i>
+            <input type="tel" id="phone" placeholder="e.g., 09075634424" />
+          </div>
+          <button id="check-phone-btn" class="btn-primary">Continue</button>
+          <p class="error" id="phone-error"></p>
         </div>
+        <div id="step-2" class="auth-step hidden">
+          <h2>Enter your email</h2>
+          <div class="input-group">
+            <i class="fas fa-envelope"></i>
+            <input type="email" id="email" placeholder="your@email.com" />
+          </div>
+          <button id="send-otp-btn" class="btn-primary">Send OTP</button>
+          <p class="error" id="email-error"></p>
+          <p class="info-note">
+            ⚠️ Each email can only be used for one account. Check your spam
+            folder for the OTP.
+          </p>
+          <button class="btn-link" id="back-to-phone">← Back</button>
+        </div>
+        <div id="step-3" class="auth-step hidden">
+          <h2>Enter OTP</h2>
+          <p class="info">OTP sent to <span id="otp-email-display"></span></p>
+          <div class="input-group">
+            <i class="fas fa-lock"></i>
+            <input
+              type="text"
+              id="otp"
+              placeholder="6-digit code"
+              maxlength="6"
+            />
+          </div>
+          <button id="verify-otp-btn" class="btn-primary">Verify</button>
+          <p class="error" id="otp-error"></p>
+          <div class="resend-container">
+            <p class="info">Resend OTP in <span id="countdown">300</span>s</p>
+            <button id="resend-otp-btn" class="btn-link" disabled>
+              Resend
+            </button>
+          </div>
+          <button class="btn-link" id="back-to-email">← Back</button>
+        </div>
+        <div id="step-4" class="auth-step hidden">
+          <h2>Complete your profile</h2>
+          <div class="avatar-preview">
+            <img id="avatar-img" src="assets/default-avatar.jpg" alt="avatar" />
+            <label for="avatar-upload" class="avatar-upload-label">
+              <i class="fas fa-camera"></i>
+            </label>
+            <input type="file" id="avatar-upload" accept="image/*" />
+          </div>
+          <div class="input-group">
+            <i class="fas fa-user"></i>
+            <input type="text" id="name" placeholder="Your name" />
+          </div>
+          <button id="save-profile-btn" class="btn-primary">
+            Start chatting
+          </button>
+          <p class="error" id="profile-error"></p>
+        </div>
+      </div>
     </div>
     <script src="js/api.js"></script>
     <script src="js/auth.js"></script>
-</body>
+  </body>
 </html>

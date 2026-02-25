@@ -1,306 +1,306 @@
 .profile-container {
-    max-width: 600px;
-    margin: 0 auto;
-    background: var(--card-bg);
-    min-height: 100vh;
-    box-shadow: var(--shadow);
+  max-width: 600px;
+  margin: 0 auto;
+  background: var(--card-bg);
+  min-height: 100vh;
+  box-shadow: var(--shadow);
 }
 
 .profile-header {
-    display: flex;
-    align-items: center;
-    padding: 15px;
-    background: var(--pink);
-    color: white;
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  background: var(--pink);
+  color: white;
 }
 
 .profile-header button {
-    background: none;
-    border: none;
-    color: white;
-    font-size: 1.2rem;
-    cursor: pointer;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    transition: var(--transition);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.2rem;
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .profile-header button:hover {
-    background: rgba(255,255,255,0.2);
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .profile-header h2 {
-    flex: 1;
-    text-align: center;
-    font-size: 1.3rem;
+  flex: 1;
+  text-align: center;
+  font-size: 1.3rem;
 }
 
 .profile-content {
-    padding: 20px;
+  padding: 20px;
 }
 
 .avatar-section {
-    position: relative;
-    width: 150px;
-    height: 150px;
-    margin: 20px auto;
+  position: relative;
+  width: 150px;
+  height: 150px;
+  margin: 20px auto;
 }
 
 #profile-avatar {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 3px solid var(--pink);
-    box-shadow: var(--shadow);
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--pink);
+  box-shadow: var(--shadow);
 }
 
 .change-avatar {
-    position: absolute;
-    bottom: 10px;
-    right: 10px;
-    background: var(--pink);
-    color: white;
-    border: none;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    font-size: 1.2rem;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 2px solid white;
-    transition: var(--transition);
-    box-shadow: var(--shadow);
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background: var(--pink);
+  color: white;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid white;
+  transition: var(--transition);
+  box-shadow: var(--shadow);
 }
 
 .change-avatar:hover {
-    background: var(--pink-dark);
-    transform: scale(1.1);
+  background: var(--pink-dark);
+  transform: scale(1.1);
 }
 
 .info-section {
-    margin: 30px 0;
+  margin: 30px 0;
 }
 
 .info-item {
-    border-bottom: 1px solid var(--border-color);
-    padding: 15px 0;
-    transition: var(--transition);
+  border-bottom: 1px solid var(--border-color);
+  padding: 15px 0;
+  transition: var(--transition);
 }
 
 .info-item:hover {
-    background: rgba(0,0,0,0.02);
-    padding-left: 10px;
-    padding-right: 10px;
-    border-radius: 5px;
+  background: rgba(0, 0, 0, 0.02);
+  padding-left: 10px;
+  padding-right: 10px;
+  border-radius: 5px;
 }
 
 .info-item label {
-    font-size: 0.8rem;
-    color: #888;
-    display: block;
-    margin-bottom: 5px;
+  font-size: 0.8rem;
+  color: #888;
+  display: block;
+  margin-bottom: 5px;
 }
 
 .info-value {
-    font-size: 1rem;
-    color: var(--text-color);
-    word-break: break-word;
+  font-size: 1rem;
+  color: var(--text-color);
+  word-break: break-word;
 }
 
 .edit-input {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid var(--pink);
-    border-radius: 5px;
-    font-size: 1rem;
-    margin-top: 5px;
-    background: var(--input-bg);
-    color: var(--text-color);
-    transition: var(--transition);
+  width: 100%;
+  padding: 8px;
+  border: 1px solid var(--pink);
+  border-radius: 5px;
+  font-size: 1rem;
+  margin-top: 5px;
+  background: var(--input-bg);
+  color: var(--text-color);
+  transition: var(--transition);
 }
 
 .edit-input:focus {
-    outline: none;
-    box-shadow: 0 0 0 2px rgba(255,105,180,0.2);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(255, 105, 180, 0.2);
 }
 
 .profile-sections {
-    margin-top: 20px;
-    border-top: 1px solid var(--border-color);
-    padding-top: 20px;
+  margin-top: 20px;
+  border-top: 1px solid var(--border-color);
+  padding-top: 20px;
 }
 
 .section-item {
-    display: flex;
-    align-items: center;
-    padding: 15px;
-    border-bottom: 1px solid var(--border-color);
-    cursor: pointer;
-    transition: background 0.2s;
-    color: var(--text-color);
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  border-bottom: 1px solid var(--border-color);
+  cursor: pointer;
+  transition: background 0.2s;
+  color: var(--text-color);
 }
 
 .section-item:hover {
-    background: var(--pink-light);
+  background: var(--pink-light);
 }
 
 .section-item i:first-child {
-    width: 30px;
-    color: var(--pink);
-    font-size: 1.2rem;
+  width: 30px;
+  color: var(--pink);
+  font-size: 1.2rem;
 }
 
 .section-item span {
-    flex: 1;
+  flex: 1;
 }
 
 .section-item i:last-child {
-    color: #999;
+  color: #999;
 }
 
 .action-buttons {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-top: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 30px;
 }
 
 .save-btn {
-    background: var(--pink);
-    color: white;
-    border: none;
-    padding: 12px;
-    border-radius: 5px;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: var(--transition);
-    box-shadow: var(--shadow);
+  background: var(--pink);
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: var(--shadow);
 }
 
 .save-btn:hover {
-    background: var(--pink-dark);
-    transform: scale(1.02);
-    box-shadow: var(--shadow-hover);
+  background: var(--pink-dark);
+  transform: scale(1.02);
+  box-shadow: var(--shadow-hover);
 }
 
 .logout-btn {
-    background: #f44336;
-    color: white;
-    border: none;
-    padding: 12px;
-    border-radius: 5px;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: var(--transition);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    box-shadow: var(--shadow);
+  background: #f44336;
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: var(--shadow);
 }
 
 .logout-btn:hover {
-    background: #d32f2f;
-    transform: scale(1.02);
-    box-shadow: var(--shadow-hover);
+  background: #d32f2f;
+  transform: scale(1.02);
+  box-shadow: var(--shadow-hover);
 }
 
 /* ========== ANIMATED + BUTTON ========== */
 .btn-icon.pulse {
-    animation: pulseGlow 2s infinite ease-in-out;
-    box-shadow: 0 0 0 0 rgba(255,105,180,0.7);
-    transform-origin: center;
-    transition: all 0.3s;
+  animation: pulseGlow 2s infinite ease-in-out;
+  box-shadow: 0 0 0 0 rgba(255, 105, 180, 0.7);
+  transform-origin: center;
+  transition: all 0.3s;
 }
 
 .btn-icon.pulse:hover {
-    animation: none;
-    transform: scale(1.1);
-    box-shadow: 0 0 15px rgba(255,105,180,0.8);
+  animation: none;
+  transform: scale(1.1);
+  box-shadow: 0 0 15px rgba(255, 105, 180, 0.8);
 }
 
 @keyframes pulseGlow {
-    0% {
-        transform: scale(1);
-        box-shadow: 0 0 0 0 rgba(255,105,180,0.7);
-    }
-    50% {
-        transform: scale(1.1);
-        box-shadow: 0 0 20px 5px rgba(255,105,180,0.9);
-    }
-    100% {
-        transform: scale(1);
-        box-shadow: 0 0 0 0 rgba(255,105,180,0.7);
-    }
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(255, 105, 180, 0.7);
+  }
+  50% {
+    transform: scale(1.1);
+    box-shadow: 0 0 20px 5px rgba(255, 105, 180, 0.9);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(255, 105, 180, 0.7);
+  }
 }
 
 /* ========== BOTTOM NAVIGATION (always visible) ========== */
 .bottom-nav {
-    display: flex;
-    justify-content: space-around;
-    padding: 10px 0;
-    border-top: 1px solid var(--border-color);
-    background: var(--card-bg);
-    box-shadow: 0 -2px 5px rgba(0,0,0,0.05);
-    flex-shrink: 0; /* ensures it stays at bottom */
+  display: flex;
+  justify-content: space-around;
+  padding: 10px 0;
+  border-top: 1px solid var(--border-color);
+  background: var(--card-bg);
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.05);
+  flex-shrink: 0; /* ensures it stays at bottom */
 }
 
 .nav-btn {
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    padding: 10px;
-    color: #888;
-    transition: var(--transition);
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  padding: 10px;
+  color: #888;
+  transition: var(--transition);
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
 }
 
 .nav-btn.active {
-    color: var(--pink);
-    background: var(--pink-light);
+  color: var(--pink);
+  background: var(--pink-light);
 }
 
 .nav-btn:hover {
-    background: var(--pink-light);
-    color: var(--pink);
+  background: var(--pink-light);
+  color: var(--pink);
 }
 
 /* Ensure left panel uses flex column to push bottom nav down */
 .chat-list-panel {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    overflow: hidden; /* prevents scroll on whole panel */
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden; /* prevents scroll on whole panel */
 }
 
 .panel-view {
-    flex: 1;
-    overflow-y: auto; /* scrollable content */
-    min-height: 0; /* required for flex child to scroll */
+  flex: 1;
+  overflow-y: auto; /* scrollable content */
+  min-height: 0; /* required for flex child to scroll */
 }
 
 /* Remove any previous hiding of bottom-nav on desktop */
 @media (max-width: 768px) {
-    /* Keep bottom nav as is, maybe adjust padding */
-    .bottom-nav {
-        padding: 8px 0;
-    }
-    .nav-btn {
-        font-size: 1.3rem;
-        width: 45px;
-        height: 45px;
-    }
+  /* Keep bottom nav as is, maybe adjust padding */
+  .bottom-nav {
+    padding: 8px 0;
+  }
+  .nav-btn {
+    font-size: 1.3rem;
+    width: 45px;
+    height: 45px;
+  }
 }

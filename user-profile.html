@@ -1,63 +1,75 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>MiChat – User Profile</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/profile.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-</head>
-<body>
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/profile.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+    />
+  </head>
+  <body>
     <div class="profile-container">
-        <!-- Header -->
-        <div class="profile-header">
-            <button id="back-btn"><i class="fas fa-arrow-left"></i></button>
-            <h2>Contact Info</h2>
-            <div style="width: 40px;"></div>
-        </div>
+      <!-- Header -->
+      <div class="profile-header">
+        <button id="back-btn"><i class="fas fa-arrow-left"></i></button>
+        <h2>Contact Info</h2>
+        <div style="width: 40px"></div>
+      </div>
 
-        <!-- Profile Content (read‑only) -->
-        <div class="profile-content">
-            <div class="avatar-section">
-                <img id="profile-avatar" src="assets/default-avatar.png" alt="avatar" class="profile-avatar">
-            </div>
-            <div class="info-section">
-                <div class="info-item">
-                    <label>Name</label>
-                    <div class="info-value" id="name-display">Loading...</div>
-                </div>
-                <div class="info-item">
-                    <label>About</label>
-                    <div class="info-value" id="about-display"></div>
-                </div>
-                <div class="info-item">
-                    <label>Phone</label>
-                    <div class="info-value" id="phone-display"></div>
-                </div>
-            </div>
-            <div class="profile-sections">
-                <div class="section-item" onclick="alert('Media coming soon')">
-                    <i class="fas fa-image"></i>
-                    <span>Media, Links and Docs</span>
-                    <i class="fas fa-chevron-right"></i>
-                </div>
-                <div class="section-item" onclick="alert('Groups coming soon')">
-                    <i class="fas fa-users"></i>
-                    <span>Groups in common</span>
-                    <i class="fas fa-chevron-right"></i>
-                </div>
-            </div>
+      <!-- Profile Content (read‑only) -->
+      <div class="profile-content">
+        <div class="avatar-section">
+          <img
+            id="profile-avatar"
+            src="assets/default-avatar.jpg"
+            alt="avatar"
+            class="profile-avatar"
+          />
         </div>
+        <div class="info-section">
+          <div class="info-item">
+            <label>Name</label>
+            <div class="info-value" id="name-display">Loading...</div>
+          </div>
+          <div class="info-item">
+            <label>About</label>
+            <div class="info-value" id="about-display"></div>
+          </div>
+          <div class="info-item">
+            <label>Phone</label>
+            <div class="info-value" id="phone-display"></div>
+          </div>
+        </div>
+        <div class="profile-sections">
+          <div class="section-item" onclick="alert('Media coming soon')">
+            <i class="fas fa-image"></i>
+            <span>Media, Links and Docs</span>
+            <i class="fas fa-chevron-right"></i>
+          </div>
+          <div class="section-item" onclick="alert('Groups coming soon')">
+            <i class="fas fa-users"></i>
+            <span>Groups in common</span>
+            <i class="fas fa-chevron-right"></i>
+          </div>
+        </div>
+      </div>
 
-        <!-- Bottom Navigation (optional) -->
-        <div class="bottom-nav">
-            <button class="nav-btn" id="chats-nav"><i class="fas fa-message"></i></button>
-            <button class="nav-btn" id="profile-nav"><i class="fas fa-user"></i></button>
-        </div>
+      <!-- Bottom Navigation (optional) -->
+      <div class="bottom-nav">
+        <button class="nav-btn" id="chats-nav">
+          <i class="fas fa-message"></i>
+        </button>
+        <button class="nav-btn" id="profile-nav">
+          <i class="fas fa-user"></i>
+        </button>
+      </div>
     </div>
 
     <script src="js/api.js"></script>
     <script src="js/user-profile.js"></script>
-</body>
+  </body>
 </html>

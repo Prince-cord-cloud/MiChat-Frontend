@@ -47,10 +47,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         aboutDisplay.textContent = currentUser.about || 'Hey there! I\'m using MiChat';
         phoneDisplay.textContent = currentUser.phone || 'Unknown';
         emailDisplay.textContent = currentUser.email || 'Unknown';
-        if (currentUser.profilePic && currentUser.profilePic !== 'default-avatar.png') {
+        if (currentUser.profilePic && currentUser.profilePic !== '/assets/default-avatar.jpg') {
             avatarImg.src = BASE_URL + currentUser.profilePic;
         } else {
-            avatarImg.src = 'assets/default-avatar.png';
+            avatarImg.src = 'assets/default-avatar.jpg';
         }
         nameInput.value = currentUser.name || '';
         aboutInput.value = currentUser.about || '';

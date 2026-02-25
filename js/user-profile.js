@@ -30,9 +30,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     try {
         const data = await apiCall(`/users/${userId}`, 'GET', null, token);
         const user = data.user;
-        avatar.src = user.profilePic && user.profilePic !== 'default-avatar.png'
+        avatar.src = user.profilePic && user.profilePic !== '/assets/default-avatar.jpg'
             ? BASE_URL + user.profilePic
-            : 'assets/default-avatar.png';
+            : 'assets/default-avatar.jpg';
         nameEl.textContent = user.name || 'Unknown';
         aboutEl.textContent = user.about || 'Hey there! I\'m using MiChat';
         phoneEl.textContent = user.phone || 'No phone';
